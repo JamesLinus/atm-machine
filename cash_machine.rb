@@ -6,9 +6,20 @@ class CashMachine
   end
 
   def start
+    loop do
+      puts 'Please insert card'
+      puts
+      puts "(press 'i' to insert card)"
+
+      button_pressed = gets.chomp
+      break if button_pressed.downcase == 'i'
+    end
+
+    inserted_card = Card.new(Account.new(1000))
+
     pin = get_pin
 
-    if pin.correct?
+    if inserted_card.pin_correct?(pin)
       display_menu
     else
       puts 'The PIN number you entered is incorrect.'
@@ -18,7 +29,8 @@ class CashMachine
   private
 
   def get_pin
-    puts 'Please enter your PIN'
+    puts 'Please enter your PIN and press ENTER'
+    gets.chomp
   end
 
   def display_menu
@@ -29,31 +41,33 @@ class CashMachine
   end
 end
 
-def Card
-  attr_reader :account
+class Card
+  attr_reader :account, :pin
 
   def initialize(account)
-    @pin = 1234
+    @pin = '1234'
     @account = account
   end
 
   def check_balance
-    account.get_balance
+    account.balance
+  end
+
+  def pin_correct?(entered_pin)
+    pin == entered_pin
   end
 end
 
-def Account
-  attr_accessor :balance
+class Account
+  attr_reader :balance
 
   def initialize(balance)
     @balance = balance
-  end
-
-  def get_balance
-    balance
   end
 
   def add_funds(amount)
     balance += amount
   end
 end
+
+CashMachine.new.start
