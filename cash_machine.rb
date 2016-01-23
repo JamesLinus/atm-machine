@@ -19,20 +19,10 @@ class CashMachine
 
     inserted_card = Card.new(Account.new(1000))
 
-    puts inserted_card.disabled?
-
     pin = get_pin
 
     if inserted_card.pin_correct?(pin) && !inserted_card.disabled?
-      loop do
-        display_menu
-
-        selected_option = gets.chomp
-
-        break if AVAILABLE_OPTIONS.include? selected_option
-      
-        puts 'Please enter 1, 2, 3 or 0'
-      end
+      handle_correct_card_and_pin(inserted_card)
     elsif inserted_card.disabled?
       puts 'This card has been disabled. Please contact your bank to enable it.'
     else
@@ -55,6 +45,42 @@ class CashMachine
     puts '2. Withdraw money'
     puts '3. Deposit money'
     puts '0. Exit'
+  end
+
+  def handle_correct_card_and_pin(inserted_card)
+    selected_option = ''
+
+    loop do
+      display_menu
+
+      selected_option = gets.chomp
+
+      break if AVAILABLE_OPTIONS.include? selected_option
+    
+      puts 'Please enter 1, 2, 3 or 0'
+      puts
+    end
+
+    case selected_option
+    when '1'
+      puts "\nYour Balance: #{inserted_card.check_balance}"
+      puts
+      puts 'Would you like to perform another operation? (y/n)'
+
+      button_pressed = gets.chomp
+
+      if button_pressed.downcase == 'y'
+        handle_correct_card_and_pin(inserted_card)
+      else
+        puts 'Have a nice day!'
+      end
+    when '2'
+      puts 'Withdrawing money'
+    when '3'
+      puts 'Depositing money'
+    when '0'
+      puts 'Exiting'
+    end
   end
 end
 
