@@ -63,23 +63,41 @@ class CashMachine
 
     case selected_option
     when '1'
-      puts "\nYour Balance: #{inserted_card.check_balance}"
+      puts "\nYour Balance: #{inserted_card.get_balance}"
       puts
-      puts 'Would you like to perform another operation? (y/n)'
-
-      button_pressed = gets.chomp
-
-      if button_pressed.downcase == 'y'
-        handle_correct_card_and_pin(inserted_card)
-      else
-        puts 'Have a nice day!'
-      end
+      another_operation?(inserted_card)
     when '2'
-      puts 'Withdrawing money'
+      puts 'How much money would you like to withdraw?'
+
+      amount = gets.chomp.to_i
+
+      if amount > inserted_card.get_balance
+        puts "Sorry. You don't have enough money on your account to withdraw #{amount} PLN"
+        another_operation?(inserted_card)
+      elsif amount > available_cash
+        puts 'Sorry. There is currently not enough cash available in this ATM Machine to withdraw such amount.'
+        another_operation?(inserted_card)
+      else
+        puts "Withdrawing #{amount} PLN"
+        inserted_card.withdraw(amount)
+        another_operation?(inserted_card)
+      end
     when '3'
       puts 'Depositing money'
     when '0'
       puts 'Exiting'
+    end
+  end
+
+  def another_operation?(inserted_card)
+    puts 'Would you like to perform another operation? (y/n)'
+
+    button_pressed = gets.chomp
+
+    if button_pressed.downcase == 'y'
+      handle_correct_card_and_pin(inserted_card)
+    else
+      puts 'Have a nice day!'
     end
   end
 end
@@ -93,7 +111,7 @@ class Card
     @disabled = false
   end
 
-  def check_balance
+  def get_balance
     account.balance
   end
 
@@ -108,6 +126,10 @@ class Card
   def disable
     disabled = true
   end
+
+  def withdraw(amount)
+    account.withdraw(amount)
+  end
 end
 
 class Account
@@ -118,7 +140,11 @@ class Account
   end
 
   def add_funds(amount)
-    balance += amount
+    @balance += amount
+  end
+
+  def withdraw(amount)
+    @balance -= amount
   end
 end
 
