@@ -83,7 +83,14 @@ class CashMachine
         another_operation?(inserted_card)
       end
     when '3'
-      puts 'Depositing money'
+      puts 'How much money would you like to deposit?'
+
+      amount = gets.chomp.to_i
+
+      puts "Depositing #{amount} PLN"
+      inserted_card.deposit(amount)
+
+      another_operation?(inserted_card)
     when '0'
       puts 'Exiting'
     end
@@ -129,6 +136,10 @@ class Card
 
   def withdraw(amount)
     account.withdraw(amount)
+  end
+
+  def deposit(amount)
+    account.add_funds(amount)
   end
 end
 
