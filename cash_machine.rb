@@ -1,5 +1,5 @@
 class CashMachine
-  AVAILABLE_OPTIONS = [0, 1, 2, 3]
+  AVAILABLE_OPTIONS = ['0', '1', '2', '3']
 
   attr_reader :available_cash
 
@@ -19,27 +19,32 @@ class CashMachine
 
     inserted_card = Card.new(Account.new(1000))
 
+    puts inserted_card.disabled?
+
     pin = get_pin
 
-    if inserted_card.pin_correct?(pin)
+    if inserted_card.pin_correct?(pin) && !inserted_card.disabled?
       loop do
         display_menu
 
-        selected_option = gets.chomp.to_i
+        selected_option = gets.chomp
 
         break if AVAILABLE_OPTIONS.include? selected_option
       
         puts 'Please enter 1, 2, 3 or 0'
       end
+    elsif inserted_card.disabled?
+      puts 'This card has been disabled. Please contact your bank to enable it.'
     else
-      puts 'The PIN number you entered is incorrect.'
+      puts 'The PIN number you entered is incorrect. The card has been disabled.'
+      inserted_card.disable
     end
   end
 
   private
 
   def get_pin
-    puts 'Please enter your PIN and press ENTER'
+    puts 'Please enter your PIN and press ENTER.'
     gets.chomp
   end
 
@@ -54,11 +59,12 @@ class CashMachine
 end
 
 class Card
-  attr_reader :account, :pin
+  attr_reader :account, :pin, :disabled
 
   def initialize(account)
     @pin = '1234'
     @account = account
+    @disabled = false
   end
 
   def check_balance
@@ -67,6 +73,14 @@ class Card
 
   def pin_correct?(entered_pin)
     pin == entered_pin
+  end
+
+  def disabled?
+    disabled
+  end
+
+  def disable
+    disabled = true
   end
 end
 
