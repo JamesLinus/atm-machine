@@ -1,4 +1,6 @@
 class CashMachine
+  AVAILABLE_OPTIONS = [0, 1, 2, 3]
+
   attr_reader :available_cash
 
   def initialize
@@ -20,7 +22,15 @@ class CashMachine
     pin = get_pin
 
     if inserted_card.pin_correct?(pin)
-      display_menu
+      loop do
+        display_menu
+
+        selected_option = gets.chomp.to_i
+
+        break if AVAILABLE_OPTIONS.include? selected_option
+      
+        puts 'Please enter 1, 2, 3 or 0'
+      end
     else
       puts 'The PIN number you entered is incorrect.'
     end
@@ -35,9 +45,11 @@ class CashMachine
 
   def display_menu
     puts 'Please select the operation:'
+    puts
     puts '1. Display Current balance'
     puts '2. Withdraw money'
     puts '3. Deposit money'
+    puts '0. Exit'
   end
 end
 
