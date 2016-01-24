@@ -2,7 +2,8 @@ require_relative 'account'
 require_relative 'card_logger'
 
 class Card
-  attr_reader :account, :pin, :number, :disabled
+  attr_reader :pin, :number
+  attr_accessor :disabled
 
   def initialize(pin)
     @pin = pin
@@ -25,7 +26,7 @@ class Card
 
   def disable
     CardLogger.log(number).info 'Card has been disabled.'
-    disabled = true
+    self.disabled = true
   end
 
   def withdraw(amount)
