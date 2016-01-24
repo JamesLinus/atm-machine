@@ -1,3 +1,5 @@
+require 'logger'
+
 class CashMachine
   AVAILABLE_OPTIONS = ['0', '1', '2', '3']
 
@@ -18,6 +20,7 @@ class CashMachine
     end
 
     inserted_card = Card.new('1234')
+    ATMLogger.log.info "Inserted card number ending #{inserted_card.number[12..-1]}"
 
     pin = get_pin
 
@@ -110,10 +113,11 @@ class CashMachine
 end
 
 class Card
-  attr_reader :account, :pin, :disabled
+  attr_reader :account, :pin, :number, :disabled
 
   def initialize(pin)
     @pin = pin
+    @number = '1234567890098765'
     @disabled = false
   end
 
@@ -159,6 +163,18 @@ class Account
 
   def withdraw(amount)
     @balance -= amount
+  end
+end
+
+class ATMLogger
+  def self.log
+    if @logger.nil?
+      file = File.new('machine.log', 'a')
+      @logger = Logger.new file
+      @logger.level = Logger::INFO
+      @logger.datetime_format = '%Y-%m-%d %H:%M:%S '
+    end
+    @logger
   end
 end
 
