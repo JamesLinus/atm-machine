@@ -17,7 +17,7 @@ class CashMachine
       break if button_pressed.downcase == 'i'
     end
 
-    inserted_card = Card.new(Account.new(1000))
+    inserted_card = Card.new('1234')
 
     pin = get_pin
 
@@ -41,7 +41,7 @@ class CashMachine
   def display_menu
     puts 'Please select the operation:'
     puts
-    puts '1. Display Current balance'
+    puts '1. Display current balance'
     puts '2. Withdraw money'
     puts '3. Deposit money'
     puts '0. Exit'
@@ -112,9 +112,8 @@ end
 class Card
   attr_reader :account, :pin, :disabled
 
-  def initialize(account)
-    @pin = '1234'
-    @account = account
+  def initialize(pin)
+    @pin = pin
     @disabled = false
   end
 
@@ -140,6 +139,10 @@ class Card
 
   def deposit(amount)
     account.add_funds(amount)
+  end
+
+  def account
+    @account ||= Account.new(1000)
   end
 end
 
