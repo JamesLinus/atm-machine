@@ -1,17 +1,6 @@
-require 'logger'
-
-module Authenticable
-  def authenticated_by_pin(card)
-    pin = get_pin
-
-    card.pin_correct?(pin)
-  end
-
-  def get_pin
-    puts 'Please enter your PIN and press ENTER.'
-    gets.chomp
-  end
-end
+require_relative 'authenticable'
+require_relative 'card'
+require_relative 'atm_logger'
 
 class CashMachine
   include Authenticable
@@ -126,88 +115,6 @@ class CashMachine
     else
       puts 'Have a nice day!'
     end
-  end
-end
-
-class Card
-  attr_reader :account, :pin, :number, :disabled
-
-  def initialize(pin)
-    @pin = pin
-    @number = '1234567890098765'
-    @disabled = false
-  end
-
-  def get_balance
-    CardLogger.log(number).info 'Successfully checked balance.'
-    account.balance
-  end
-
-  def pin_correct?(entered_pin)
-    pin == entered_pin
-  end
-
-  def disabled?
-    disabled
-  end
-
-  def disable
-    CardLogger.log(number).info 'Card has been disabled.'
-    disabled = true
-  end
-
-  def withdraw(amount)
-    CardLogger.log(number).info "Successfully withdrawn #{amount} PLN."
-    account.withdraw(amount)
-  end
-
-  def deposit(amount)
-    CardLogger.log(number).info "Successfully deposited #{amount} PLN."
-    account.add_funds(amount)
-  end
-
-  def account
-    @account ||= Account.new(1000)
-  end
-end
-
-class Account
-  attr_reader :balance
-
-  def initialize(balance)
-    @balance = balance
-  end
-
-  def add_funds(amount)
-    @balance += amount
-  end
-
-  def withdraw(amount)
-    @balance -= amount
-  end
-end
-
-class ATMLogger
-  def self.log
-    if @logger.nil?
-      file = File.new('machine.log', 'a')
-      @logger = Logger.new file
-      @logger.level = Logger::INFO
-      @logger.datetime_format = '%Y-%m-%d %H:%M:%S '
-    end
-    @logger
-  end
-end
-
-class CardLogger
-  def self.log(card_number)
-    if @card_logger.nil?
-      file = File.new("card - #{card_number}.log", 'a')
-      @card_logger = Logger.new file
-      @card_logger.level = Logger::INFO
-      @card_logger.datetime_format = '%Y-%m-%d %H:%M:%S '
-    end
-    @card_logger
   end
 end
 
