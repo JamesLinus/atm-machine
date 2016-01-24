@@ -131,6 +131,7 @@ class Card
   end
 
   def get_balance
+    CardLogger.log(number).info 'Successfully checked balance.'
     account.balance
   end
 
@@ -143,14 +144,17 @@ class Card
   end
 
   def disable
+    CardLogger.log(number).info 'Card has been disabled.'
     disabled = true
   end
 
   def withdraw(amount)
+    CardLogger.log(number).info "Successfully withdrawn #{amount} PLN."
     account.withdraw(amount)
   end
 
   def deposit(amount)
+    CardLogger.log(number).info "Successfully deposited #{amount} PLN."
     account.add_funds(amount)
   end
 
@@ -184,6 +188,18 @@ class ATMLogger
       @logger.datetime_format = '%Y-%m-%d %H:%M:%S '
     end
     @logger
+  end
+end
+
+class CardLogger
+  def self.log(card_number)
+    if @card_logger.nil?
+      file = File.new("card - #{card_number}.log", 'a')
+      @card_logger = Logger.new file
+      @card_logger.level = Logger::INFO
+      @card_logger.datetime_format = '%Y-%m-%d %H:%M:%S '
+    end
+    @card_logger
   end
 end
 
