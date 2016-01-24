@@ -38,6 +38,12 @@ class Card
     account.add_funds(amount)
   end
 
+  def safe_number
+    number[12..-1]
+  end
+
+  private
+
   def account
     @account ||= Account.new(1000)
   end
