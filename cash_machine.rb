@@ -1,6 +1,21 @@
 require 'logger'
 
+module Authenticable
+  def authenticated_by_pin(card)
+    pin = get_pin
+
+    card.pin_correct?(pin)
+  end
+
+  def get_pin
+    puts 'Please enter your PIN and press ENTER.'
+    gets.chomp
+  end
+end
+
 class CashMachine
+  include Authenticable
+
   AVAILABLE_OPTIONS = ['0', '1', '2', '3']
 
   attr_reader :available_cash
@@ -22,9 +37,7 @@ class CashMachine
     inserted_card = Card.new('1234')
     card_number = inserted_card.number[12..-1]
     
-    pin = get_pin
-
-    if inserted_card.pin_correct?(pin) && !inserted_card.disabled?
+    if authenticated_by_pin(inserted_card) && !inserted_card.disabled?
       ATMLogger.log.info "Inserted card number ending in #{card_number}"
       handle_correct_card_and_pin(inserted_card)
     elsif inserted_card.disabled?
@@ -38,11 +51,6 @@ class CashMachine
   end
 
   private
-
-  def get_pin
-    puts 'Please enter your PIN and press ENTER.'
-    gets.chomp
-  end
 
   def display_menu
     puts 'Please select the operation:'
